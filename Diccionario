@@ -1,0 +1,16 @@
+meme_dict = {
+            "CRINGE": "Algo excepcionalmente raro o embarazoso",
+            "LOL": "Una respuesta común a algo gracioso",
+            "NTP": "No te preocupes",
+            "XD": "Una forma de reirse",
+            "CREEPY": "Algo que da miedo",
+            "AGGRO": "ponerse agresivo/enojado",
+            }
+word = input("Escribe una palabra que no entiendas: ").upper()
+
+if word in meme_dict.keys():
+    # ¿Que debemos hacer si se encuentra la palabra?
+    print("El significado es: ", meme_dict[word])
+else:
+    # ¿Que hacer si no se encuentra la palabra?
+    print("Palabra no encontrada en el diccionario")
