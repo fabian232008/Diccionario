@@ -1,0 +1,130 @@
+# This example requires the 'members' and 'message_content' privileged intents to function.
+
+import os
+import discord
+from discord.ext import commands
+import random
+
+description = '''An example bot to showcase the discord.ext.commands extension
+module.
+
+There are a number of utility commands being showcased here.'''
+
+datos = [
+    "La contaminación del aire puede reducir la esperanza de vida: partículas finas (PM2.5) incrementan enfermedades respiratorias y cardiovasculares.",
+    "Los microplásticos ingresan a la cadena alimentaria: se han encontrado en pescado, sal y hasta en el agua potable.",
+    "La contaminación lumínica altera los ciclos reproductivos y migratorios de aves e insectos nocturnos.",
+    "Contaminantes como plomo y mercurio pueden causar problemas neurológicos en niños.",
+    "El exceso de nutrientes en lagos provoca ‘zonas muertas’ sin oxígeno por eutrofización.",
+    "Los pesticidas afectan a las abejas, reduciendo la polinización y el rendimiento agrícola.",
+    "La contaminación sonora altera el comportamiento de animales marinos y terrestres.",
+    "La contaminación del agua reduce la biodiversidad acuática y la pesca local.",
+    "Las emisiones de CO₂ y metano contribuyen al cambio climático y a patrones extremos de lluvia.",
+    "Los derrames de petróleo dañan ecosistemas marinos y tardan años en recuperarse.",
+    "La contaminación del suelo reduce la fertilidad y puede hacer que los alimentos acumulen toxinas.",
+    "Algunos contaminantes actúan como disruptores endocrinos, afectando la reproducción en humanos y animales.",
+    "La quema de residuos produce dioxinas y compuestos tóxicos que se acumulan en la cadena alimentaria.",
+    "La contaminación urbana puede disminuir el rendimiento escolar y laboral por problemas respiratorios.",
+    "El plástico en los océanos puede transportar especies invasoras pegadas a sus fragmentos.",
+    "La acidificación del océano debilita corales y moluscos, afectando pesquerías.",
+    "La deforestación combinada con contaminación incrementa la erosión y pérdida de hábitat.",
+    "Las partículas contaminantes agravan el asma en niños y aumentan las visitas médicas.",
+    "Las comunidades vulnerables sufren más la contaminación por falta de recursos y atención médica."
+]
+
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='?', description=description, intents=intents)
+
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('------')
+
+
+@bot.event
+async def on_ready():
+    print(f"✅ Bot conectado como {bot.user}")
+
+
+
+@bot.command()
+async def dato(ctx):
+    """Envía un dato aleatorio sobre la contaminación."""
+    dato_random = random.choice(datos)
+    embed = discord.Embed(
+        title="Dato Curioso Ambiental",
+        description=dato_random,
+        color=discord.Color.green()
+    )
+    embed.set_footer(text="Recuerden cuidar el planeta es cuidar nuestra casa")
+    await ctx.send(embed=embed)
+
+
+@bot.command()
+async def add(ctx, left: int, right: int):
+    """Adds two numbers together."""
+    await ctx.send(left + right)
+
+
+@bot.command()
+async def mem(ctx):
+    image = random.choice(os.listdir("images"))
+    with open(f'images/{image}', 'rb') as f:
+        # ¡Vamos a almacenar el archivo de la biblioteca Discord convertido en esta variable!
+        picture = discord.File(f)
+    # A continuación, podemos enviar este archivo como parámetro.
+    await ctx.send(file=picture)
+
+@bot.command()
+async def roll(ctx, dice: str):
+    """Rolls a dice in NdN format."""
+    try:
+        rolls, limit = map(int, dice.split('d'))
+    except Exception:
+        await ctx.send('Format has to be in NdN!')
+        return
+
+    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
+    await ctx.send(result)
+
+
+@bot.command(description='For when you wanna settle the score some other way')
+async def choose(ctx, *choices: str):
+    """Chooses between multiple choices."""
+    await ctx.send(random.choice(choices))
+
+
+@bot.command()
+async def repeat(ctx, times: int, content='repeating...'):
+    """Repeats a message multiple times."""
+    for i in range(times):
+        await ctx.send(content)
+
+
+@bot.command()
+async def joined(ctx, member: discord.Member):
+    """Says when a member joined."""
+    await ctx.send(f'{member.name} joined {discord.utils.format_dt(member.joined_at)}')
+
+
+@bot.group()
+async def cool(ctx):
+    """Says if a user is cool.
+
+    In reality this just checks if a subcommand is being invoked.
+    """
+    if ctx.invoked_subcommand is None:
+        await ctx.send(f'No, {ctx.subcommand_passed} is not cool')
+
+
+@cool.command(name='bot')
+async def _bot(ctx):
+    """Is the bot cool?"""
+    await ctx.send('Yes, the bot is cool.')
+
+
+bot.run('')
